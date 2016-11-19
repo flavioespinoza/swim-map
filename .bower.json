@@ -1,0 +1,29 @@
+{
+  "name": "swim-map",
+  "description": "Swim map build with Mapbox GL",
+  "main": "swim-map.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "lodash": "^4.17.2",
+    "jquery": "^3.1.1",
+    "edge-css": "*"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "homepage": "https://github.com/swimit/swim-map",
+  "version": "0.0.1",
+  "_release": "0.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.1",
+    "commit": "4e4856fc20039dcc4b6213762e71bd95c4e1fed3"
+  },
+  "_source": "https://github.com/swimit/swim-map.git",
+  "_target": "^0.0.1",
+  "_originalSource": "swim-map",
+  "_direct": true
+}

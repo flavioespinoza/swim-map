@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>swim-map demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+    </style>
+
+    <style>
+      .centered:not([style-scope]):not(.style-scope) {
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .info {
+        margin-bottom: 12px;
+      }
+    </style>
+
+
+
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic swim-map demo</h3>
+      <div class="info">Use arrow keys to move around the map with game-like controls.</div>
+
+      <demo-snippet>
+        <template>
+          <style>
+            .parent-container {
+              position: relative;
+              width: 750px;
+              height: 500px;
+              border: 5px solid #737879;
+            }
+          </style>
+
+          <div class="parent-container">
+            <swim-map host-uri="ws://city.swim.services"
+                      node="country/us"
+                      lane="country/agencies">
+            </swim-map>
+          </div>
+
+        </template>
+      </demo-snippet>
+    </div>
+
+  </body>
+</html>

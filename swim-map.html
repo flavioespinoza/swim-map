@@ -1,0 +1,416 @@
+<link rel="import" href="../polymer/polymer.html">
+<script src="../lodash/lodash.js"></script>
+<script src="../jquery/dist/jquery.js"></script>
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.27.0/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.27.0/mapbox-gl.css' rel='stylesheet' />
+<script src="https://repo.swim.it/swim/recon-0.3.9.js"></script>
+<script src="https://repo.swim.it/swim/swim-client-0.4.5.js"></script>
+
+<!--
+## swim-map
+
+`swim-map` is built with Mapbox GL and allows one to create a map of any size and tie into a backend swim service.
+
+Example:
+
+      <swim-map host-uri="ws://city.swim.services"
+                node="country/us"
+                lane="country/agencies">
+      </swim-map>
+
+### Styling
+
+The `swim-map` sets it's size based on it's parent container. The example below would result in a map 750px wide by 500px high.
+The parent container can be any height, width or aspect ratio.
+
+##### NOTE: The parent container css must have `position: relative` for the map to work properly.
+
+    <style type="text/css">
+      /* CSS set by user */
+      .parent-container {
+        position: relative;
+        width: 750px;
+        height: 500px;
+      }
+    </style>
+
+
+    <div class="parent-container">
+      <swim-map host-uri="ws://city.swim.services"
+                node="country/us"
+                lane="country/agencies">
+      </swim-map>
+    </div>
+
+@demo bower_components/swim-map/demo/index.html
+-->
+
+<dom-module id="swim-map">
+  <template>
+    <style type="text/less">
+      /* local DOM styles go here */
+      :host {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+
+    <!-- local DOM goes here -->
+    <div id="map"
+         style="width: 100%; height: 100%;"
+         flex>
+      <!-- Map is rendered here -->
+    </div>
+
+  </template>
+
+  <script>
+
+    // GeoJSON object to hold our measurement features
+    const geojson = {
+      "type": "FeatureCollection",
+      "features": []
+    };
+
+    Polymer({
+
+      is: 'swim-map',
+
+      properties: {
+        hostUri: String,
+        node: String,
+        lane: String
+      },
+
+      _accessToken: function () {
+        return 'pk.eyJ1IjoiZmxhdmlvZXNwaW5vemEiLCJhIjoiY2l1NG5qdjF6MGphczJ5cGc5MDdiaXdiYyJ9.n7jVcg_Rr2HMaoKjJrQ6WQ';
+      },
+
+      _linkCountry: function () {
+
+        const _self = this;
+
+        let hostUri = this.hostUri;
+        let node = this.node;
+        let lane = this.lane;
+
+        _self.host = swim.host(hostUri);
+        _self.country = this.host.node(node);
+
+        function _downlink() {
+          return _self.agencies = _self.country.downlink()
+        }
+
+        _downlink()
+          .lane(lane)
+          .onEvent(function (event) {
+            const agencyId = event.body['@agency'];
+            event.body.id = agencyId;
+            event.body.name = agencyId;
+            _self._linkAgency(agencyId);
+          })
+          .primaryKey('@agency')
+          .keepAlive(true)
+          .syncMap();
+      },
+
+      _linkAgency: function (agencyId) {
+
+        const _self = this;
+
+        let node = 'agency/' + encodeURIComponent(agencyId);
+        let lane = 'agency/routes';
+
+        if (_self.agencies[agencyId]) {
+          return;
+        }
+
+        function _downlink() {
+          return _self.agencies[agencyId] = _self.host.downlink();
+        }
+
+        _downlink()
+          .node(node)
+          .lane(lane)
+          .onEvent(function (event) {
+
+            let routeId = event.body['@route'];
+            _self._linkVehicles(routeId);
+
+          })
+          .primaryKey('@route')
+          .keepAlive(true)
+          .syncMap();
+
+      },
+
+      _linkVehicles: function (routeId) {
+
+        const _self = this;
+
+        let node = 'route/' + encodeURIComponent(routeId);
+        let lane = 'route/vehicles';
+
+        geojson.features = [];
+
+        function _downlink() {
+          return _self.vehicleLink = _self.host.downlink();
+        }
+
+        _downlink()
+          .node(node)
+          .lane(lane)
+          .onEvent(function (event) {
+
+            const vehicle = event.body;
+            const vehicleId = routeId + '-' + vehicle.id;
+
+            let _onRoute = 0;
+
+            if (vehicle.onRoute) {
+              _onRoute = 1
+            } else {
+              _onRoute = 0
+            }
+
+            let point = {
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  _.toNumber(vehicle.longitude),
+                  _.toNumber(vehicle.latitude)
+                ]
+              },
+              "properties": {
+                "id": vehicle.id,
+                "vehicleId": vehicleId,
+                "onRoute": _onRoute,
+                "routeId": vehicle.routeId,
+                "speed": vehicle.speed,
+                "longitude": vehicle.longitude,
+                "latitude": vehicle.latitude,
+                "icon": "music"
+              }
+            };
+
+            let objIndex = _.findIndex(geojson.features, function (obj) {
+              return obj.properties.vehicleId === vehicleId;
+            });
+
+            if (objIndex > -1) {
+              geojson.features[objIndex] = point;
+            } else {
+              geojson.features.push(point);
+            }
+
+          })
+          .keepAlive(true)
+          .syncMap();
+      },
+
+      _source: function () {
+
+        const _self = this;
+
+        _self.map.addSource('geojson', {
+          "type": "geojson",
+          "data": geojson
+        });
+
+      },
+
+      _loadMap: function () {
+
+        const _self = this;
+
+        _self._linkCountry();
+
+        mapboxgl.accessToken = _self._accessToken();
+        let mapLocation = {lat: 37.746943570586616, lng: -122.44652249755859};
+
+
+        _self.map = new mapboxgl.Map({
+          style: 'mapbox://styles/mapbox/light-v9',
+          center: [mapLocation.lng, mapLocation.lat],
+          container: 'map',
+          pitch: 45,
+          bearing: -17.6,
+          zoom: 12
+        });
+
+        _self.map.addControl(new mapboxgl.NavigationControl({
+          position: 'bottom-left'
+        }));
+
+        _self.map.on('load', function () {
+
+          _self._source();
+
+          _self.map.addLayer({
+            id: 'vehicles',
+            type: 'circle',
+            source: 'geojson',
+            paint: {
+              'circle-radius': {
+                stops: [
+
+                  // zoom is 5 -> circle radius will be 18px
+                  [5, 18],
+
+                  // zoom is 10 -> circle radius will be 6px
+                  [10, 6]
+
+                ]
+              },
+              'circle-color': {
+                property: 'onRoute',
+                stops: [
+                  [0, '#EC5840'],
+                  [1, '#00A0B3']
+                ]
+              }
+            },
+            filter: ['in', '$type', 'Point']
+          });
+
+          /** 3D Building layer */
+          _self.map.addLayer({
+            'id': '3d-buildings',
+            'source': 'composite',
+            'source-layer': 'building',
+            'filter': ['==', 'extrude', 'true'],
+            'type': 'fill',
+            'minzoom': 10,
+            'paint': {
+              'fill-color': '#aaa',
+              'fill-extrude-height': {
+                'type': 'identity',
+                'property': 'height'
+              },
+              'fill-extrude-base': {
+                'type': 'identity',
+                'property': 'min_height'
+              },
+              'fill-opacity': .6
+            }
+          });
+
+          /** Gaming (arrow) controls */
+
+            // pixels the map pans when the arrows are clicked
+          let deltaDistance = 100;
+
+          // degrees the map rotates when the Command + left or right arrow is clicked
+          let deltaDegrees = 25;
+
+          function easing(t) {
+            return t * (2 - t);
+          }
+
+          _self.map.getCanvas().focus();
+
+          _self.map.getCanvas().addEventListener('keydown', function (e) {
+            e.preventDefault();
+            if (e.which === 38) { // up
+              _self.map.panBy([0, -deltaDistance], {
+                easing: easing
+              });
+            } else if (e.which === 40) { // down
+              _self.map.panBy([0, deltaDistance], {
+                easing: easing
+              });
+            } else if (e.which === 37) { // left
+              _self.map.easeTo({
+                bearing: _self.map.getBearing() - deltaDegrees,
+                easing: easing
+              });
+            } else if (e.which === 39) { // right
+              _self.map.easeTo({
+                bearing: _self.map.getBearing() + deltaDegrees,
+                easing: easing
+              });
+            }
+          }, true);
+
+        });
+
+        _self.map.on('click', function (e) {
+
+          _self._selectVehicle(e);
+
+        });
+
+        setTimeout(function () {
+          window.dispatchEvent(new Event('resize'));
+          setTimeout(function () {
+            $('#mapOverlay').addClass("loaded");
+          }, 500);
+        }, 1000);
+
+      },
+
+      /** Select vehicle functionality */
+      _selectVehicle: function (e) {
+
+        //TODO: Change to not use internal angular scope function
+        const $element = $('#swim');
+        const scope = angular.element($element).scope();
+        const _self = this;
+
+        let features = _self.map.queryRenderedFeatures(e.point, {layers: ['vehicles']});
+        if (!features.length) {
+          return;
+        }
+        let feature = features[0];
+
+        scope.addToLeftNav(feature);
+
+      },
+
+      _flyTo: function (obj) {
+        const _self = this;
+        _self.map.flyTo(obj);
+      },
+
+      _fitBounds: function (arr) {
+        const _self = this;
+        _self.map.fitBounds(arr)
+      },
+
+      _centerOnVehicle: function (vehicleId) {
+        const _self = this;
+        let _vehicle = _.find(geojson.features, function (obj) {
+          return obj.properties.vehicleId === vehicleId;
+        });
+        _self.map.flyTo({
+          center: [_vehicle.properties.longitude, _vehicle.properties.latitude],
+          zoom: 20
+        });
+      },
+
+      attached: function () {
+        const _self = this;
+
+        _self._loadMap();
+
+        setInterval(function () {
+          let source = _self.map.getSource('geojson')
+          if (source) {
+            source.setData(geojson);
+          }
+          console.log('updated');
+        }, 3000);
+
+      },
+
+      detached: function () {
+
+      }
+
+    });
+
+  </script>
+
+</dom-module>
