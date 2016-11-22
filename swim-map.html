@@ -1,10 +1,10 @@
 <link rel="import" href="../polymer/polymer.html">
 <script src="../lodash/lodash.js"></script>
 <script src="../jquery/dist/jquery.js"></script>
-<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.27.0/mapbox-gl.js'></script>
-<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.27.0/mapbox-gl.css' rel='stylesheet' />
-<script src="https://repo.swim.it/swim/recon-0.3.9.js"></script>
-<script src="https://repo.swim.it/swim/swim-client-0.4.5.js"></script>
+<script src='../swim-polymer/mapbox-gl.js'></script>
+<link rel='stylesheet' href='../swim-polymer/mapbox-gl.css' />
+<script src="../swim-polymer/recon-0.3.9.js"></script>
+<script src="../swim-polymer/swim-client-0.4.5.js"></script>
 
 <!--
 ## swim-map
@@ -64,8 +64,9 @@ The parent container can be any height, width or aspect ratio.
     </div>
 
   </template>
+</dom-module>
 
-  <script>
+<script>
 
     // GeoJSON object to hold our measurement features
     const geojson = {
@@ -374,7 +375,7 @@ The parent container can be any height, width or aspect ratio.
         _self._loadMap();
 
         setInterval(function () {
-          let source = _self.map.getSource('geojson')
+          let source = _self.map.getSource('geojson');
           if (source) {
             source.setData(geojson);
           }
@@ -390,5 +391,3 @@ The parent container can be any height, width or aspect ratio.
     });
 
   </script>
-
-</dom-module>
