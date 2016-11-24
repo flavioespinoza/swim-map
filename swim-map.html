@@ -1,8 +1,10 @@
 <link rel="import" href="../polymer/polymer.html">
+
+<link rel='stylesheet' href='../swim-polymer/mapbox-gl.css' />
+
 <script src="../lodash/lodash.js"></script>
 <script src="../jquery/dist/jquery.js"></script>
 <script src='../swim-polymer/mapbox-gl.js'></script>
-<link rel='stylesheet' href='../swim-polymer/mapbox-gl.css' />
 <script src="../swim-polymer/recon-0.3.9.js"></script>
 <script src="../swim-polymer/swim-client-0.4.5.js"></script>
 
@@ -135,10 +137,8 @@ The parent container can be any height, width or aspect ratio.
           .node(node)
           .lane(lane)
           .onEvent(function (event) {
-
             let routeId = event.body['@route'];
             _self._linkVehicles(routeId);
-
           })
           .primaryKey('@route')
           .keepAlive(true)
@@ -333,9 +333,6 @@ The parent container can be any height, width or aspect ratio.
       /** Select vehicle functionality */
       _selectVehicle: function (e) {
 
-        //TODO: Change to not use internal angular scope function
-        const $element = $('#swim');
-        const scope = angular.element($element).scope();
         const _self = this;
 
         let features = _self.map.queryRenderedFeatures(e.point, {layers: ['vehicles']});
@@ -344,7 +341,7 @@ The parent container can be any height, width or aspect ratio.
         }
         let feature = features[0];
 
-        scope.addToLeftNav(feature);
+        swimAssetList.addAsset(feature);
 
       },
 
