@@ -1,0 +1,133 @@
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <!-- CSS -->
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="../../edge-css/source/edge.css"/>
+  <link rel="stylesheet" href="../../swim-polymer/swim-demo.css"/>
+
+
+  <script src="../../jquery/dist/jquery.js"></script>
+  <script src="../../swim-polymer/swim-clipboard.js"></script>
+
+  <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+
+  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+
+  <link rel="import" href="../../prism-element/prism-highlighter.html">
+  <link rel="import" href="../../marked-element/marked-element.html">
+  <link rel="import" href="../../paper-card/paper-card.html">
+  <link rel="import" href="../../paper-button/paper-button.html">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+  <link rel="import" href="../../swim-map/swim-map.html">
+
+
+</head>
+
+<body>
+
+<prism-highlighter></prism-highlighter>
+
+<div class="swim-demo h100 pb24">
+
+  <section class="h100" layout="row" flex>
+
+    <div class="pos-rel mb12">
+
+      <h3 class="mt24">Basic swim-map</h3>
+
+      <paper-card class="mb12">
+
+        <div class="swim-demo-block">
+
+          <div class="sub-title mb12">
+            Use arrow keys for game like controls.
+          </div>
+
+          <div class="demo-container">
+              <!-- The HTML in the <marked-element> will be rendered here. -->
+          </div>
+
+        </div>
+
+        <div class="swim-code-block p6 mt12 pos-rel">
+
+          <paper-button id="copyClipBtn" class="bd-clipboard pos-abs r12 t12" raised>
+            <span class="btn-clipboard" title="" data-original-title="Copy to clipboard" aria-describedby="tooltip106901">Copy</span>
+          </paper-button>
+
+          <marked-element>
+
+            <div class="markdown-html"></div>
+
+            <script type="text/markdown">
+              ```html
+
+                <!-- NOTE: Your map must have a
+                parent container with relative positioning
+                and stuff. -->
+
+                <style>
+                  .parent-container {
+                    position: relative;
+                    width: 564px;
+                    height: 400px;
+                    border: 5px solid #737879;
+                  }
+                </style>
+
+                <div class="parent-container">
+
+                  <swim-map host-uri="ws://city.swim.services"
+                            node="country/us"
+                            lane="country/agencies">
+
+                  </swim-map>
+
+                </div>
+
+              ```
+
+            </script>
+          </marked-element>
+
+        </div>
+
+      </paper-card>
+
+    </div>
+
+  </section>
+
+
+</div>
+
+<script src="../../swim-polymer/swim-demo.js"></script>
+
+
+<script>
+
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
