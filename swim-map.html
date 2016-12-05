@@ -38,13 +38,14 @@ The parent container can be any height, width or aspect ratio.
 
 
     <div class="parent-container">
-      <swim-map host-uri="ws://city.swim.services"
+      <swim-map id="basicMap"
+                host-uri="ws://city.swim.services"
                 node="country/us"
                 lane="country/agencies">
       </swim-map>
     </div>
 
-@demo bower_components/swim-map/demo/index.html
+@demo bower_components/swim-map/demo/swim-map_demo.html
 -->
 
 <dom-module id="swim-map">
@@ -81,6 +82,7 @@ The parent container can be any height, width or aspect ratio.
       is: 'swim-map',
 
       properties: {
+        id: String,
         hostUri: String,
         node: String,
         lane: String
@@ -317,7 +319,13 @@ The parent container can be any height, width or aspect ratio.
 
         _self.map.on('click', function (e) {
 
-          _self._selectVehicle(e);
+          try {
+            if (swimAssetList) {
+              _self._selectVehicle(e);
+            }
+          } catch (err) {
+            console.log('No swimAssetList available.');
+          }
 
         });
 

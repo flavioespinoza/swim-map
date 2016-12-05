@@ -7,29 +7,20 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <link rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-  <link rel="stylesheet"
-        href="../../edge-css/source/edge.css"/>
-  <link rel="stylesheet"
-        href="../../swim-polymer/swim-demo.css"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="../../edge-css/source/edge.css"/>
+  <link rel="stylesheet" href="../../swim-polymer/swim-demo.css"/>
 
   <script src="../../jquery/dist/jquery.js"></script>
   <script src="../../swim-polymer/swim-clipboard.js"></script>
   <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
 
-  <link rel="import"
-        href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-  <link rel="import"
-        href="../../prism-element/prism-highlighter.html">
-  <link rel="import"
-        href="../../marked-element/marked-element.html">
-  <link rel="import"
-        href="../../paper-card/paper-card.html">
-  <link rel="import"
-        href="../../paper-button/paper-button.html">
-  <link rel="import"
-        href="../../swim-map/swim-map.html">
+  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+  <link rel="import" href="../../prism-element/prism-highlighter.html">
+  <link rel="import" href="../../marked-element/marked-element.html">
+  <link rel="import" href="../../paper-card/paper-card.html">
+  <link rel="import" href="../../paper-button/paper-button.html">
+  <link rel="import" href="../../swim-map/swim-map.html">
 
 </head>
 
@@ -68,10 +59,10 @@
           </paper-button>
 
           <marked-element>
-
             <div class="markdown-html"></div>
 
             <script type="text/markdown">
+
               ```html
 
                 <!-- NOTE: Your map must have a
@@ -89,7 +80,8 @@
 
                 <div class="parent-container">
 
-                  <swim-map host-uri="ws://city.swim.services"
+                  <swim-map id="basicMap"
+                            host-uri="ws://city.swim.services"
                             node="country/us"
                             lane="country/agencies">
 
@@ -99,6 +91,7 @@
 
               ```
             </script>
+
           </marked-element>
 
         </div>
@@ -112,10 +105,6 @@
 </div>
 
 <script src="../../swim-polymer/swim-demo.js"></script>
-
-<script>
-
-</script>
 
 </body>
 </html>
