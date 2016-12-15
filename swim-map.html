@@ -329,6 +329,11 @@ The parent container can be any height, width or aspect ratio.
 
         });
 
+        _self.map.on('mousemove', function (e) {
+
+//          console.log('e.lngLat', e.lngLat);
+        });
+
         setTimeout(function () {
           window.dispatchEvent(new Event('resize'));
           setTimeout(function () {
@@ -359,6 +364,7 @@ The parent container can be any height, width or aspect ratio.
       },
 
       _fitBounds: function (arr) {
+        console.log('arr', arr);
         const _self = this;
         _self.map.fitBounds(arr)
       },
